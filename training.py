@@ -1,9 +1,9 @@
 import numpy as np
 import tensorflow as tf
+import os
 from sklearn.model_selection import train_test_split
 from extra_keras_datasets import emnist # Libreria per il download automatico
 
-#Definiamo le tue classi nell'ordine desiderato
 classes = ['V', 'D', 'C', 'X', 'S', 'F']
 # Mappa EMNIST: A=1, B=2, C=3, D=4, E=5, F=6, ..., S=19, ..., V=22, X=24
 emnist_map = {'C': 3, 'D': 4, 'F': 6, 'S': 19, 'V': 22, 'X': 24}
@@ -54,5 +54,11 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 model.fit(X_train, y_train, epochs=7, batch_size=16, validation_data=(X_test, y_test))
 
 #Salvataggio
+folder_name= "models"
+model_path = os.path.join(folder_name, "model.h5")
+
+if not os.path.exist(folder_name):
+    os.makedirs(folder_name)
+
 model.save("model.h5")
-print("Modello addestrato sulle 6 lettere e salvato!")
+print("Modello addestrato sulle 6 lettere e salvato in {folder_name}!")
