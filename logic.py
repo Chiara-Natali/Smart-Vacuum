@@ -59,7 +59,6 @@ class SmartVacuum(Problem):
     def path_cost(self, c, state1, action, state2):
         return c + 1
 
-# --- EURISTICA (Spostata fuori dalla classe) ---
 def smart_vacuum_h(node):
     curr_pos, grid = node.state
     curr_r, curr_c = curr_pos

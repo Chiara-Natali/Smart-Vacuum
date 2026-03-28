@@ -1,4 +1,4 @@
-import numpy as np
+from numpy import isin 
 import tensorflow as tf
 import os
 from sklearn.model_selection import train_test_split
@@ -7,30 +7,31 @@ from extra_keras_datasets import emnist # Libreria per il download automatico
 classes = ['V', 'D', 'C', 'X', 'S', 'F']
 # Mappa EMNIST: A=1, B=2, C=3, D=4, E=5, F=6, ..., S=19, ..., V=22, X=24
 emnist_map = {'C': 3, 'D': 4, 'F': 6, 'S': 19, 'V': 22, 'X': 24}
-target_letters = [emnist_map[c] for c in classes]
+target_labels = [emnist_map[c] for c in classes]
 
 #Caricamento automatico del dataset
 print("Scaricamento e caricamento eMNIST in corso...")
-(x_raw, y_raw), (x_test_raw, y_test_raw) = emnist.load_data(type='letters')
+train, test = emnist.load_data(type='letters')
+x_raw, y_raw = train
+x_test_raw, y_test_raw = test
 
 #Funzione di filtraggio per tenere solo le 6 lettere
-def filter_data(x, y, target_letters):
-    mask = np.isin(y, target_letters) # Maschera di selezione
+def filter_data(x, y, target_labels):
+    mask = isin(y, target_labels) # Maschera di selezione
     x_filtered = x[mask]
     y_filtered = y[mask]
     
     #Riassegniamo le etichette da 0 a 5 per la nostra rete
-    for new_index, old_label in enumerate(target_letters):
-        y_filtered[y_filtered == old_label] = new_index
+    for index, lbl in enumerate(target_labels):
+        y_filtered[y_filtered == lbl] = index
+
     return x_filtered, y_filtered
 
-x_filtered, y_filtered = filter_data(x_raw, y_raw, target_letters)
+x_filtered, y_filtered = filter_data(x_raw, y_raw, target_labels)
 
-#Pre-processing
-img_size = 28
-# Normalizzazione e reshape immagini
+#Pre-processing (normalizzazione, reshape)
 X = x_filtered.astype("float32") / 255.0
-X = X.reshape(-1, img_size, img_size, 1)
+X = X.reshape(-1, 28, 28, 1)
 
 #Conversione in categorie (one-hot encoding)
 y = tf.keras.utils.to_categorical(y_filtered, num_classes=len(classes))
