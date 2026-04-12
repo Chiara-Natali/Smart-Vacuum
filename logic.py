@@ -1,3 +1,7 @@
+!git clone https://github.com/aimacode/aima-python.git
+
+import sys
+sys.path.append("/content/aima-python") # Use absolute path for robustness
 from search import *
 
 class SmartVacuum(Problem):
@@ -20,7 +24,7 @@ class SmartVacuum(Problem):
 
         # Azione: Movimento
         for delta_row, delta_col, move in [(-1, 0, 'Up'), (1, 0, 'Down'), (0, -1, 'Left'), (0, 1, 'Right')]:
-            next_row, next_col = row + delta_row, col + delta_col
+            next_row, next_col = row + delta_row, col + delta_col # Corrected line
             if 0 <= next_row < self.rows and 0 <= next_col < self.cols:
                 if grid[next_row][next_col] != 'X':
                     possible_actions.append(move)
@@ -59,28 +63,28 @@ class SmartVacuum(Problem):
     def path_cost(self, c, state1, action, state2):
         return c + 1
 
-def smart_vacuum_h(node):
-    curr_pos, grid = node.state
-    curr_r, curr_c = curr_pos
-    
-    dirty_rooms = []
-    total_cleaning_effort = 0
-    
-    for r in range(len(grid)):
-        for c in range(len(grid[0])):
-            status = grid[r][c]
-            if status == 'D':
-                dirty_rooms.append((r, c))
-                total_cleaning_effort += 1
-            elif status == 'V':
-                dirty_rooms.append((r, c))
-                total_cleaning_effort += 2
+    def h(self, node):
+        curr_pos, grid = node.state
+        curr_r, curr_c = curr_pos
 
-    # Se pulito, vai verso il traguardo (F)
-    if not dirty_rooms:
-        r_goal, c_goal = node.problem.goal_pos
-        return abs(curr_r - r_goal) + abs(curr_c - c_goal)
+        dirty_rooms = []
+        total_cleaning_effort = 0
 
-    # Distanza dalla stanza sporca più vicina + lavoro rimanente
-    dist_to_nearest = min(abs(curr_r - dr) + abs(curr_c - dc) for dr, dc in dirty_rooms)
-    return dist_to_nearest + total_cleaning_effort
+        for r in range(len(grid)):
+            for c in range(len(grid[0])):
+                status = grid[r][c]
+                if status == 'D':
+                    dirty_rooms.append((r, c))
+                    total_cleaning_effort += 1
+                elif status == 'V':
+                    dirty_rooms.append((r, c))
+                    total_cleaning_effort += 2
+
+        # Se pulito, vai verso il traguardo (F)
+        if not dirty_rooms:
+            r_goal, c_goal = self.goal_pos # Access goal_pos via self
+            return abs(curr_r - r_goal) + abs(curr_c - c_goal)
+
+        # Distanza dalla stanza sporca più vicina + lavoro rimanente
+        dist_to_nearest = min(abs(curr_r - dr) + abs(curr_c - dc) for dr, dc in dirty_rooms)
+        return dist_to_nearest + total_cleaning_effort
